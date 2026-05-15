@@ -15,13 +15,13 @@
 
 Запуск всех тестов:
 ```bash
-python main.py
+python3 main.py
 ```
 
 Запуск конкретного теста:
 ```bash
-python main.py -t excess
-python main.py -t deficit
+python3 main.py -t excess
+python3 main.py -t deficit
 ```
 
 ---
