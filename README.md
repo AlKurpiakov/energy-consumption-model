@@ -22,7 +22,6 @@ python main.py
 ```bash
 python main.py -t excess
 python main.py -t deficit
-python main.py -t all
 ```
 
 ---
