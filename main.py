@@ -89,7 +89,7 @@ def pick_best_diesels_dp(diesels: DieselGeneratos, needed_power: float):
 
 
 def simulate(consumers: Consumers, solar: SolarGeneratos, diesel: DieselGeneratos) -> None:
-    hours = list(range(24))
+    hours = list(range(1, 25))
 
     solar_total_by_hour = [0.0] * 24
     solar_cost_by_hour = [0.0] * 24
@@ -100,31 +100,31 @@ def simulate(consumers: Consumers, solar: SolarGeneratos, diesel: DieselGenerato
         cost = 0.0
         on = []
         for i in range(len(solar.ids)):
-            gen = solar.profile[i][h]
+            gen = solar.profile[i][h - 1]
             if gen > 0:
                 on.append(solar.ids[i])
             total += gen
             cost += gen * solar.cost_per_kwh[i]
-        solar_total_by_hour[h] = total
-        solar_cost_by_hour[h] = cost
-        solar_on_by_hour[h] = on
+        solar_total_by_hour[h - 1] = total
+        solar_cost_by_hour[h - 1] = cost
+        solar_on_by_hour[h - 1] = on
 
     demand_total_by_hour = [0.0] * 24
     for h in hours:
-        demand_total_by_hour[h] = sum(consumers.demand[i][h] for i in range(len(consumers.ids)))
+        demand_total_by_hour[h - 1] = sum(consumers.demand[i][h - 1] for i in range(len(consumers.ids)))
 
     max_diesel_power = sum(diesel.power)
 
     print("Час\tСтоимость\tСолнечные\tДизели\tОтключённые")
     for h in hours:
-        solar_total_gen = solar_total_by_hour[h]
-        solar_cost = solar_cost_by_hour[h]
+        solar_total_gen = solar_total_by_hour[h - 1]
+        solar_cost = solar_cost_by_hour[h - 1]
 
         max_total_gen = solar_total_gen + max_diesel_power
-        demand_total = demand_total_by_hour[h]
+        demand_total = demand_total_by_hour[h - 1]
 
         if max_total_gen < demand_total:
-            heap = [(consumers.demand[i][h], i) for i in range(len(consumers.ids))]
+            heap = [(consumers.demand[i][h - 1], i) for i in range(len(consumers.ids))]
             heapq.heapify(heap)
 
             selected = []
@@ -152,7 +152,7 @@ def simulate(consumers: Consumers, solar: SolarGeneratos, diesel: DieselGenerato
 
         total_cost = solar_cost + diesel_cost
         off_names = [consumers.ids[i] for i in consumers_off]
-        solar_names = solar_on_by_hour[h]
+        solar_names = solar_on_by_hour[h - 1]
 
         print(f"{h:2d}\t{total_cost:7.2f}\t{solar_names}\t{diesel_used}\t{off_names}")
 
